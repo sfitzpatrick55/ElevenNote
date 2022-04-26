@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ElevenNote.Data;
+using ElevenNote.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ElevenNote.Services.User
 {
