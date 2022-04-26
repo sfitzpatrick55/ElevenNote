@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ElevenNote.Services.User;
 
 namespace ElevenNote.WebAPI.Controllers
 {
@@ -11,5 +12,10 @@ namespace ElevenNote.WebAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IUserService _service;
+        public UserController(IUserService service)
+        {
+            _service = service;
+        }
     }
 }
