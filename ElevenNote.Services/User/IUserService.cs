@@ -6,7 +6,7 @@ namespace ElevenNote.Services.User
 {
     public class IUserService
     {
-        Task<bool> RegisterUserAsync(UserRegister model)
+        async Task<bool> RegisterUserAsync(UserRegister model)
         {
             var entity = new UserEntity
             {
@@ -15,6 +15,11 @@ namespace ElevenNote.Services.User
                 Password = model.Password,
                 DateCreated = DateTime.Now
             };
+
+            _context.Users.Add(entity);
+            var numberOfChanges = await _context.SaveChangesAsync();
+
+            return numberOfChanges == 1;
         }
     }
 }
