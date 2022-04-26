@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ElevenNote.Services.User;
 using ElevenNote.Models.User;
@@ -23,9 +18,9 @@ namespace ElevenNote.WebAPI.Controllers
     [HttpPost("Register")]
     public async Task<IActionResult> RegisterUser([FromBody] UserRegister model)
     {
-        if (!ModelState.IsValid)
+        if (!modelState.IsValid)
         {
-            return BadRequestObjectResult(ModelState);
+            return BadRequest(modelState);
         }
 
         var registerResult = await _service.RegisterUserAsync(model);
