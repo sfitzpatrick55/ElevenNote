@@ -21,6 +21,11 @@ namespace ElevenNote.Services.User
                 Password = model.Password,
                 DateCreated = DateTime.Now
             };
+
+            _context.Users.Add(entity);
+            var numberOfChanges = await _context.SaveChangesAsync();
+
+            return numberOfChanges == 1;
         }
     }
 }
