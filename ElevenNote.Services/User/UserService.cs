@@ -14,6 +14,25 @@ namespace ElevenNote.Services.User
         {
             _context = context;
         }
+        
+        public async Task<UserDetail> GetUserByIdAsync(int userId)
+        {
+            var entity = await _context.Users.FindAsync(userId);
+            if (entity is null)
+                return null;
+
+            var userDetail = new UserDetail
+            {
+                Id = entity.Id,
+                Email = entity.Email,
+                Username = entity.Username,
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,
+                DateCreated = entity.DateCreated
+            };
+
+            return userDetail;
+        }
         public async Task<bool> RegisterUserAsync(UserRegister model)
         {
             if (await GetUserByEmailAsync(model.Email) != null || await GetUserByUsernameAsync(model.Username) != null)
