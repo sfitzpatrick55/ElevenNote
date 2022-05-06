@@ -4,15 +4,22 @@ using ElevenNote.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
+using System.Net.Http;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ElevenNote.Services.Token
 {
     public class TokenService : ITokenService
     {
         private readonly ApplicationDbContext _context;
-        public TokenService(ApplicationDbContext context)
+        private readonly IConfiguration _configuration;
+        public TokenService(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
         public async Task<TokenResponse> GetTokenAsync(TokenRequest model) 
         {
@@ -34,7 +41,35 @@ namespace ElevenNote.Services.Token
 
             return userEntity;
         }
-        private TokenResponse GenerateToken(UserEntity entity) {}
+        private TokenResponse GenerateToken(UserEntity entity) 
+        {
+            var claims = GetClaims(entity);
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Issuer = _configuration["Jwt:Issuer"],
+                Audience = _configuration["Jwt:Audience"],
+                Subject = new ClaimsIdentity(claims),
+                IssuedAt = DateTime.UtcNow,
+                Expires = DateTime.UtcNow.AddDays(14),
+                SigningCredentials = credentials
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            var TokenResponse = new TokenResponse
+            {
+                Token = tokenHandler.WriteToken(token),
+                IssuedAt = token.ValidFrom,
+                Expires = token.ValidTo
+            };
+
+            return TokenResponse;
+        }
 
         private Claim[] GetClaims(UserEntity user)
         {
